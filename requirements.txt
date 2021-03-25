@@ -2,3 +2,5 @@
 
 requests
 python-mpv
+tox
+pytest

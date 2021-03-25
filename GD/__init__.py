@@ -5,6 +5,8 @@ import pdb
 import csv
 import difflib
 import datetime,time,math
+import pkg_resources
+import codecs
 from operator import attrgetter,methodcaller
 from mpv import MPV
 from importlib import reload
@@ -18,7 +20,7 @@ class GDArchive:
     
     self.url_scrape = self.url + '/services/search/v1/scrape'
     self.scrape_parms = {'debug':'false','xvar':'production','total_only':'false','count':'10000','sorts':'date asc,avg_rating desc,num_favorites desc,downloads desc','fields':'identifier,date,avg_rating,num_reviews,num_favorites,stars,downloads,files_count,format,collection,source,subject,type'}
-    self.set_data = GDSet(self.dbpath)
+    self.set_data = GDSet()
     self.tapes = self.load_tapes(reload_ids)
     self.tape_dates = self.get_tape_dates()
     self.dates = sorted(self.tape_dates.keys())
@@ -141,6 +143,7 @@ class GDTape:
     return self.tracks[1+n]
  
   def get_metadata(self):
+    if self.meta_loaded: return
     self.tracks = []
     date = datetime.datetime.strptime(self.date,'%Y-%m-%d').date() 
     meta_path = os.path.join(self.dbpath,str(date.year),str(date.month),self.identifier+'.json')
@@ -172,7 +175,7 @@ class GDTape:
     self.meta_loaded = True
     #return page_meta
     self.insert_breaks()
-    return self.tracks
+    return 
 
   def append_track(self,tdict):
     source = tdict['source']
@@ -195,7 +198,7 @@ class GDTape:
     # 1970-02-14 is an example with 2 shows.
     sd = self.set_data
     if sd == None: return self.identifier
-    lb,sb,locb = self.insert_breaks()
+    lb,sb,locb = self._compute_breaks()
     venue_string = ""
     if not sd == None:
       l = sd['location']
@@ -227,7 +230,7 @@ class GDTape:
     if not self.meta_loaded: self.get_metadata()
     if self._breaks_added: return
     breaks = self._compute_breaks()
-    breakd = {'track':-1,'original':'setbreak','title':'Set Break','format':'Ogg Vorbis','size':1,'source':'original','path':'/home/steve/projects/deadstream/'}
+    breakd = {'track':-1,'original':'setbreak','title':'Set Break','format':'Ogg Vorbis','size':1,'source':'original','path':self.dbpath}
     lbreakd =dict(list(breakd.items()) + [('title','Set Break'),('name','silence600.ogg')])
     sbreakd =dict(list(breakd.items()) + [('title','Encore Break'),('name','silence300.ogg')])
     locbreakd =dict(list(breakd.items()) + [('title','Location Break'),('name','silence600.ogg')])
@@ -243,7 +246,7 @@ class GDTape:
          if i==j: newtracks.append(GDTrack(locbreakd,'',True))
        newtracks.append(t)
     self._breaks_added = True
-    self.tracks = newtracks
+    self.tracks = newtracks.copy()
 
 class GDTrack:
   """ A track from a GDTape recording """
@@ -279,11 +282,12 @@ class GDTrack:
 
 class GDSet:
   """ Set Information from a Grateful Dead date """
-  def __init__(self,dbpath):
+  def __init__(self):
     set_data = {}
     prevsong = None;
-    setbreak_path = os.path.join(dbpath,'set_breaks.csv')
-    r = [r for r in  csv.reader(open(setbreak_path,'r'))]                                                                                                                                         
+    set_breaks = pkg_resources.resource_stream(__name__,"set_breaks.csv")
+    utf8_reader = codecs.getreader("utf-8")
+    r = [r for r in  csv.reader(utf8_reader(set_breaks))]                                                                                                                                         
     headers = r[0] 
     for row in r[1:]:
       d = dict(zip(headers,row))
@@ -348,7 +352,7 @@ class GDPlayer(MPV):
     self.create_playlist()
 
   def __str__(self):
-    return __repr__()
+    return self.__repr__()
     
   def __repr__(self):
     retstr = str(self.playlist)
@@ -381,8 +385,8 @@ class GDPlayer(MPV):
     self.playlist_pos = 0
     self.pause()
 
-  def next(self): self.command('playlist-next') # jump to next track
-  def prev(self): self.command('playlist-prev') # jump to previous track
+  def next(self): self.command('playlist-next'); self.wait_until_playing() # jump to next track
+  def prev(self): self.command('playlist-prev'); self.wait_until_playing() # jump to previous track
 
   def track_status(self):
     if self.playlist_pos == None: print (F"Playlist not started"); return None
