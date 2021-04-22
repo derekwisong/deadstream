@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup(
-    name="deadstream",
-    version="0.0.1",
-    packages=["deadstream"],
+    name="timemachine",
+    version="0.1.0",
+    packages=["timemachine"],
     install_requires=[
         'aiohttp',
         'requests',
@@ -11,10 +11,10 @@ setup(
         'RPi.GPIO',
         'adafruit-blinka',
         'adafruit-circuitpython-rgb-display',
-        'pillow',
+        'Pillow',
         'pickle5'
     ],
     package_data={
-        "deadstream": ["FreeMono.ttf", "ariallgt.ttf", "DejaVuSansMono-Bold.ttf","set_breaks.csv"]
+        "timemachine": ["FreeMono.ttf", "ariallgt.ttf", "DejaVuSansMono-Bold.ttf","set_breaks.csv"]
     }
 )
