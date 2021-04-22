@@ -23,9 +23,11 @@ stop_pin = None
 ffwd_pin = None
 
 select_pin = 4   # pin 4 ok w/ Sound card
-#play_pause_pin = 2 # from the I2C bus (may need to connect to ground)
-#rewind_pin = 3  # from the I2C bus (may need to connect to ground)
+play_pause_pin = 2 # from the I2C bus (may need to connect to ground)
+rewind_pin = 3  # from the I2C bus (may need to connect to ground)
 stop_pin = 20   # pin 18 interferes with sound card
 ffwd_pin = 26    # pin 26 ok with sound card.
 
 
+# display
+rotation = 90

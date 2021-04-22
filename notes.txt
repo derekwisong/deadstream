@@ -1,0 +1,29 @@
+screen
+
+screen breadboard:
+    red      LITE (3v3)   1
+    orange   MISO         
+    yellow   SCK          23  GPIO 11 (SCLK)
+    green    MOSI         19  GPIO 10
+    blue     TFT_CS       24  GPIO 8 (CE0)
+    purple   CARD_CS      
+    gray     D/C          18  GPIO 24
+    white    RESET        22  GPIO 25
+    ---
+    red      Vcc (5v)     2
+    green    GND          6
+
+
+bootstrap
+
+```
+# install git, venv, and minimal system requirements
+sudo apt-get install git python3-venv python3-dev libopenjp2-7-dev libtiff-dev libmpv-dev
+
+# hardware configuration
+Enable SPI via raspi-config (or add "dtparam=spi=on" to /boot/config)
+
+# enable non-root user "derek" to use spi and gpio
+sudo usermod -aG gpio derek
+sudo usermod -aG spi derek
+```

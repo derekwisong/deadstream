@@ -5,3 +5,8 @@ pytest
 aiohttp
 python-mpv
 pickle5
+requests
+RPi.GPIO
+adafruit-blinka
+adafruit-circuitpython-rgb-display
+pillow

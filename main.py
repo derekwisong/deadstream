@@ -7,6 +7,7 @@ from time import sleep
 import logging
 import threading
 import signal
+import pathlib
 
 parser = optparse.OptionParser()
 parser.add_option('-d','--debug',dest='debug',type="int",default=1,help="If > 0, don't run the main script on loading")
@@ -117,7 +118,8 @@ def main(parms):
     #_ = [x.setup() for x in [y,m,d,select,ffwd,stop]]
 
     logging.info ("Loading GD Archive")
-    a = GD.GDArchive('/home/steve/projects/deadstream/metadata')
+    archive_path = str(pathlib.Path.home().joinpath("projects", "deadstream", "metadata"))
+    a = GD.GDArchive(archive_path)
     logging.info ("Done ")
     scr.clear()
 
