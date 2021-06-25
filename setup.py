@@ -9,13 +9,13 @@ setup(
         'aiofiles',
         'requests',
         'python-mpv',
-        'RPi.GPIO',
-        'adafruit-blinka',
-        'adafruit-circuitpython-rgb-display',
+#        'RPi.GPIO',
+#        'adafruit-blinka',
+#        'adafruit-circuitpython-rgb-display',
         'Pillow',
-        'gpiozero',
+#        'gpiozero',
         'tenacity',
-        'cherrypy',
+#        'cherrypy',
         'pre-commit'
     ],
     package_data={
